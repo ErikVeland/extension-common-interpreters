@@ -34,7 +34,7 @@ function init(context: types.IExtensionContext): boolean {
   context.registerInterpreter('.jar', (input: types.IRunParameters) => {
     if (javaPath === undefined) {
       throw new (util as any).MissingInterpreter('Java isn\'t installed',
-        'https://www.java.com/de/download/');
+                                                 'https://www.java.com/de/download/');
     }
     return {
       executable: javaPath,
@@ -54,7 +54,7 @@ function init(context: types.IExtensionContext): boolean {
   context.registerInterpreter('.py', (input: types.IRunParameters) => {
     if (pythonPath === undefined) {
       throw new (util as any).MissingInterpreter('Python isn\'t installed',
-        'https://www.python.org/downloads/');
+                                                 'https://www.python.org/downloads/');
     }
     return {
       executable: pythonPath,
