@@ -1,2 +1,480 @@
-(()=>{var t={959:(t,e,r)=>{var n;function o(t,e,r){if("function"==typeof e&&(r=e,e={}),!r){if("function"!=typeof Promise)throw new TypeError("callback not provided");return new Promise((function(r,n){o(t,e||{},(function(t,e){t?n(t):r(e)}))}))}n(t,e||{},(function(t,n){t&&("EACCES"===t.code||e&&e.ignoreErrors)&&(t=null,n=!1),r(t,n)}))}r(48),n="win32"===process.platform||global.TESTING_WINDOWS?r(429):r(601),t.exports=o,o.sync=function(t,e){try{return n.sync(t,e||{})}catch(t){if(e&&e.ignoreErrors||"EACCES"===t.code)return!1;throw t}}},601:(t,e,r)=>{t.exports=o,o.sync=function(t,e){return i(n.statSync(t),e)};var n=r(48);function o(t,e,r){n.stat(t,(function(t,n){r(t,!t&&i(n,e))}))}function i(t,e){return t.isFile()&&function(t,e){var r=t.mode,n=t.uid,o=t.gid,i=void 0!==e.uid?e.uid:process.getuid&&process.getuid(),s=void 0!==e.gid?e.gid:process.getgid&&process.getgid(),c=parseInt("100",8),a=parseInt("010",8);return r&parseInt("001",8)||r&a&&o===s||r&c&&n===i||r&(c|a)&&0===i}(t,e)}},429:(t,e,r)=>{t.exports=i,i.sync=function(t,e){return o(n.statSync(t),t,e)};var n=r(48);function o(t,e,r){return!(!t.isSymbolicLink()&&!t.isFile())&&function(t,e){var r=void 0!==e.pathExt?e.pathExt:process.env.PATHEXT;if(!r)return!0;if(-1!==(r=r.split(";")).indexOf(""))return!0;for(var n=0;n<r.length;n++){var o=r[n].toLowerCase();if(o&&t.substr(-o.length).toLowerCase()===o)return!0}return!1}(e,r)}function i(t,e,r){n.stat(t,(function(n,i){r(n,!n&&o(i,t,e))}))}},806:(t,e,r)=>{t.exports=u,u.sync=function(t,e){for(var r=a(t,e=e||{}),n=r.env,i=r.ext,u=r.extExe,p=[],l=0,f=n.length;l<f;l++){var v=n[l];'"'===v.charAt(0)&&'"'===v.slice(-1)&&(v=v.slice(1,-1));var d=o.join(v,t);!v&&/^\.[\\\/]/.test(t)&&(d=t.slice(0,2)+d);for(var x=0,g=i.length;x<g;x++){var h=d+i[x];try{if(s.sync(h,{pathExt:u})){if(!e.all)return h;p.push(h)}}catch(t){}}}if(e.all&&p.length)return p;if(e.nothrow)return null;throw c(t)};var n="win32"===process.platform||"cygwin"===process.env.OSTYPE||"msys"===process.env.OSTYPE,o=r(315),i=n?";":":",s=r(959);function c(t){var e=new Error("not found: "+t);return e.code="ENOENT",e}function a(t,e){var r=e.colon||i,o=e.path||process.env.PATH||"",s=[""];o=o.split(r);var c="";return n&&(o.unshift(process.cwd()),s=(c=e.pathExt||process.env.PATHEXT||".EXE;.CMD;.BAT;.COM").split(r),-1!==t.indexOf(".")&&""!==s[0]&&s.unshift("")),(t.match(/\//)||n&&t.match(/\\/))&&(o=[""]),{env:o,ext:s,extExe:c}}function u(t,e,r){"function"==typeof e&&(r=e,e={});var n=a(t,e),i=n.env,u=n.ext,p=n.extExe,l=[];!function n(a,f){if(a===f)return e.all&&l.length?r(null,l):r(c(t));var v=i[a];'"'===v.charAt(0)&&'"'===v.slice(-1)&&(v=v.slice(1,-1));var d=o.join(v,t);!v&&/^\.[\\\/]/.test(t)&&(d=t.slice(0,2)+d),function t(o,i){if(o===i)return n(a+1,f);var c=u[o];s(d+c,{pathExt:p},(function(n,s){if(!n&&s){if(!e.all)return r(null,d+c);l.push(d+c)}return t(o+1,i)}))}(0,u.length)}(0,i.length)}},48:t=>{"use strict";t.exports=require("fs")},315:t=>{"use strict";t.exports=require("path")},446:t=>{"use strict";t.exports=require("vortex-api")},282:t=>{"use strict";t.exports=require("process")}},e={};function r(n){var o=e[n];if(void 0!==o)return o.exports;var i=e[n]={exports:{}};return t[n](i,i.exports,r),i.exports}var n={};(()=>{"use strict";var t=n;Object.defineProperty(t,"__esModule",{value:!0});const e=r(315),o=r(282),i=r(446),s=r(806),c=function(){if(void 0===o.env.JAVA_HOME)return;const t="java"+("win32"===o.platform?".exe":"");return e.join(o.env.JAVA_HOME,"bin",t)}(),a=function(){try{return s.sync("python")}catch(t){return void(0,i.log)("info","python not found",t.message)}}();t.default=function(t){return t.registerInterpreter(".jar",(t=>{if(void 0===c)throw new i.util.MissingInterpreter("Java isn't installed","https://www.java.com/de/download/");return{executable:c,args:["-jar",t.executable].concat(t.args),options:t.options}})),t.registerInterpreter(".vbs",(t=>({executable:e.join(o.env.windir,"system32","cscript.exe"),args:[t.executable].concat(t.args),options:t.options}))),t.registerInterpreter(".py",(t=>{if(void 0===a)throw new i.util.MissingInterpreter("Python isn't installed","https://www.python.org/downloads/");return{executable:a,args:[t.executable].concat(t.args),options:t.options}})),"win32"===o.platform&&(t.registerInterpreter(".cmd",(t=>({executable:"cmd.exe",args:["/K",`"${t.executable}"`].concat(t.args),options:t.options}))),t.registerInterpreter(".bat",(t=>({executable:"cmd.exe",args:["/K",`"${t.executable}"`].concat(t.args),options:Object.assign(Object.assign({},t.options),{shell:!0})})))),!0}})(),module.exports=n})();
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./node_modules/isexe/index.js":
+/*!*************************************!*\
+  !*** ./node_modules/isexe/index.js ***!
+  \*************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var fs = __webpack_require__(/*! fs */ "fs")
+var core
+if (process.platform === 'win32' || global.TESTING_WINDOWS) {
+  core = __webpack_require__(/*! ./windows.js */ "./node_modules/isexe/windows.js")
+} else {
+  core = __webpack_require__(/*! ./mode.js */ "./node_modules/isexe/mode.js")
+}
+
+module.exports = isexe
+isexe.sync = sync
+
+function isexe (path, options, cb) {
+  if (typeof options === 'function') {
+    cb = options
+    options = {}
+  }
+
+  if (!cb) {
+    if (typeof Promise !== 'function') {
+      throw new TypeError('callback not provided')
+    }
+
+    return new Promise(function (resolve, reject) {
+      isexe(path, options || {}, function (er, is) {
+        if (er) {
+          reject(er)
+        } else {
+          resolve(is)
+        }
+      })
+    })
+  }
+
+  core(path, options || {}, function (er, is) {
+    // ignore EACCES because that just means we aren't allowed to run it
+    if (er) {
+      if (er.code === 'EACCES' || options && options.ignoreErrors) {
+        er = null
+        is = false
+      }
+    }
+    cb(er, is)
+  })
+}
+
+function sync (path, options) {
+  // my kingdom for a filtered catch
+  try {
+    return core.sync(path, options || {})
+  } catch (er) {
+    if (options && options.ignoreErrors || er.code === 'EACCES') {
+      return false
+    } else {
+      throw er
+    }
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/isexe/mode.js":
+/*!************************************!*\
+  !*** ./node_modules/isexe/mode.js ***!
+  \************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = isexe
+isexe.sync = sync
+
+var fs = __webpack_require__(/*! fs */ "fs")
+
+function isexe (path, options, cb) {
+  fs.stat(path, function (er, stat) {
+    cb(er, er ? false : checkStat(stat, options))
+  })
+}
+
+function sync (path, options) {
+  return checkStat(fs.statSync(path), options)
+}
+
+function checkStat (stat, options) {
+  return stat.isFile() && checkMode(stat, options)
+}
+
+function checkMode (stat, options) {
+  var mod = stat.mode
+  var uid = stat.uid
+  var gid = stat.gid
+
+  var myUid = options.uid !== undefined ?
+    options.uid : process.getuid && process.getuid()
+  var myGid = options.gid !== undefined ?
+    options.gid : process.getgid && process.getgid()
+
+  var u = parseInt('100', 8)
+  var g = parseInt('010', 8)
+  var o = parseInt('001', 8)
+  var ug = u | g
+
+  var ret = (mod & o) ||
+    (mod & g) && gid === myGid ||
+    (mod & u) && uid === myUid ||
+    (mod & ug) && myUid === 0
+
+  return ret
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/isexe/windows.js":
+/*!***************************************!*\
+  !*** ./node_modules/isexe/windows.js ***!
+  \***************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = isexe
+isexe.sync = sync
+
+var fs = __webpack_require__(/*! fs */ "fs")
+
+function checkPathExt (path, options) {
+  var pathext = options.pathExt !== undefined ?
+    options.pathExt : process.env.PATHEXT
+
+  if (!pathext) {
+    return true
+  }
+
+  pathext = pathext.split(';')
+  if (pathext.indexOf('') !== -1) {
+    return true
+  }
+  for (var i = 0; i < pathext.length; i++) {
+    var p = pathext[i].toLowerCase()
+    if (p && path.substr(-p.length).toLowerCase() === p) {
+      return true
+    }
+  }
+  return false
+}
+
+function checkStat (stat, path, options) {
+  if (!stat.isSymbolicLink() && !stat.isFile()) {
+    return false
+  }
+  return checkPathExt(path, options)
+}
+
+function isexe (path, options, cb) {
+  fs.stat(path, function (er, stat) {
+    cb(er, er ? false : checkStat(stat, path, options))
+  })
+}
+
+function sync (path, options) {
+  return checkStat(fs.statSync(path), path, options)
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/which/which.js":
+/*!*************************************!*\
+  !*** ./node_modules/which/which.js ***!
+  \*************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = which
+which.sync = whichSync
+
+var isWindows = process.platform === 'win32' ||
+    process.env.OSTYPE === 'cygwin' ||
+    process.env.OSTYPE === 'msys'
+
+var path = __webpack_require__(/*! path */ "path")
+var COLON = isWindows ? ';' : ':'
+var isexe = __webpack_require__(/*! isexe */ "./node_modules/isexe/index.js")
+
+function getNotFoundError (cmd) {
+  var er = new Error('not found: ' + cmd)
+  er.code = 'ENOENT'
+
+  return er
+}
+
+function getPathInfo (cmd, opt) {
+  var colon = opt.colon || COLON
+  var pathEnv = opt.path || process.env.PATH || ''
+  var pathExt = ['']
+
+  pathEnv = pathEnv.split(colon)
+
+  var pathExtExe = ''
+  if (isWindows) {
+    pathEnv.unshift(process.cwd())
+    pathExtExe = (opt.pathExt || process.env.PATHEXT || '.EXE;.CMD;.BAT;.COM')
+    pathExt = pathExtExe.split(colon)
+
+
+    // Always test the cmd itself first.  isexe will check to make sure
+    // it's found in the pathExt set.
+    if (cmd.indexOf('.') !== -1 && pathExt[0] !== '')
+      pathExt.unshift('')
+  }
+
+  // If it has a slash, then we don't bother searching the pathenv.
+  // just check the file itself, and that's it.
+  if (cmd.match(/\//) || isWindows && cmd.match(/\\/))
+    pathEnv = ['']
+
+  return {
+    env: pathEnv,
+    ext: pathExt,
+    extExe: pathExtExe
+  }
+}
+
+function which (cmd, opt, cb) {
+  if (typeof opt === 'function') {
+    cb = opt
+    opt = {}
+  }
+
+  var info = getPathInfo(cmd, opt)
+  var pathEnv = info.env
+  var pathExt = info.ext
+  var pathExtExe = info.extExe
+  var found = []
+
+  ;(function F (i, l) {
+    if (i === l) {
+      if (opt.all && found.length)
+        return cb(null, found)
+      else
+        return cb(getNotFoundError(cmd))
+    }
+
+    var pathPart = pathEnv[i]
+    if (pathPart.charAt(0) === '"' && pathPart.slice(-1) === '"')
+      pathPart = pathPart.slice(1, -1)
+
+    var p = path.join(pathPart, cmd)
+    if (!pathPart && (/^\.[\\\/]/).test(cmd)) {
+      p = cmd.slice(0, 2) + p
+    }
+    ;(function E (ii, ll) {
+      if (ii === ll) return F(i + 1, l)
+      var ext = pathExt[ii]
+      isexe(p + ext, { pathExt: pathExtExe }, function (er, is) {
+        if (!er && is) {
+          if (opt.all)
+            found.push(p + ext)
+          else
+            return cb(null, p + ext)
+        }
+        return E(ii + 1, ll)
+      })
+    })(0, pathExt.length)
+  })(0, pathEnv.length)
+}
+
+function whichSync (cmd, opt) {
+  opt = opt || {}
+
+  var info = getPathInfo(cmd, opt)
+  var pathEnv = info.env
+  var pathExt = info.ext
+  var pathExtExe = info.extExe
+  var found = []
+
+  for (var i = 0, l = pathEnv.length; i < l; i ++) {
+    var pathPart = pathEnv[i]
+    if (pathPart.charAt(0) === '"' && pathPart.slice(-1) === '"')
+      pathPart = pathPart.slice(1, -1)
+
+    var p = path.join(pathPart, cmd)
+    if (!pathPart && /^\.[\\\/]/.test(cmd)) {
+      p = cmd.slice(0, 2) + p
+    }
+    for (var j = 0, ll = pathExt.length; j < ll; j ++) {
+      var cur = p + pathExt[j]
+      var is
+      try {
+        is = isexe.sync(cur, { pathExt: pathExtExe })
+        if (is) {
+          if (opt.all)
+            found.push(cur)
+          else
+            return cur
+        }
+      } catch (ex) {}
+    }
+  }
+
+  if (opt.all && found.length)
+    return found
+
+  if (opt.nothrow)
+    return null
+
+  throw getNotFoundError(cmd)
+}
+
+
+/***/ }),
+
+/***/ "fs":
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs");
+
+/***/ }),
+
+/***/ "path":
+/*!***********************!*\
+  !*** external "path" ***!
+  \***********************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("path");
+
+/***/ }),
+
+/***/ "vortex-api":
+/*!*****************************!*\
+  !*** external "vortex-api" ***!
+  \*****************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("vortex-api");
+
+/***/ }),
+
+/***/ "process":
+/*!**************************!*\
+  !*** external "process" ***!
+  \**************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("process");
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+/*!**********************!*\
+  !*** ./src/index.ts ***!
+  \**********************/
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const path = __webpack_require__(/*! path */ "path");
+const process = __webpack_require__(/*! process */ "process");
+const vortex_api_1 = __webpack_require__(/*! vortex-api */ "vortex-api");
+const which = __webpack_require__(/*! which */ "./node_modules/which/which.js");
+function exeExtension() {
+    return process.platform === 'win32'
+        ? '.exe'
+        : '';
+}
+function findJava() {
+    if (process.env.JAVA_HOME === undefined) {
+        return undefined;
+    }
+    const fileName = 'java' + exeExtension();
+    return path.join(process.env.JAVA_HOME, 'bin', fileName);
+}
+function findPython() {
+    try {
+        return which.sync('python');
+    }
+    catch (err) {
+        (0, vortex_api_1.log)('info', 'python not found', err.message);
+        return undefined;
+    }
+}
+const javaPath = findJava();
+const pythonPath = findPython();
+function init(context) {
+    context.registerInterpreter('.jar', (input) => {
+        if (javaPath === undefined) {
+            throw new vortex_api_1.util.MissingInterpreter('Java isn\'t installed', 'https://www.java.com/de/download/');
+        }
+        return {
+            executable: javaPath,
+            args: ['-jar', input.executable].concat(input.args),
+            options: input.options,
+        };
+    });
+    context.registerInterpreter('.vbs', (input) => {
+        return {
+            executable: path.join(process.env.windir, 'system32', 'cscript.exe'),
+            args: [input.executable].concat(input.args),
+            options: input.options,
+        };
+    });
+    context.registerInterpreter('.py', (input) => {
+        if (pythonPath === undefined) {
+            throw new vortex_api_1.util.MissingInterpreter('Python isn\'t installed', 'https://www.python.org/downloads/');
+        }
+        return {
+            executable: pythonPath,
+            args: [input.executable].concat(input.args),
+            options: input.options,
+        };
+    });
+    if (process.platform === 'win32') {
+        context.registerInterpreter('.cmd', (input) => {
+            return {
+                executable: 'cmd.exe',
+                args: ['/K', `"${input.executable}"`].concat(input.args),
+                options: input.options,
+            };
+        });
+        context.registerInterpreter('.bat', (input) => {
+            return {
+                executable: 'cmd.exe',
+                args: ['/K', `"${input.executable}"`].concat(input.args),
+                options: Object.assign(Object.assign({}, input.options), { shell: true }),
+            };
+        });
+    }
+    return true;
+}
+exports["default"] = init;
+
+})();
+
+module.exports = __webpack_exports__;
+/******/ })()
+;
 //# sourceMappingURL=common-interpreters.js.map
